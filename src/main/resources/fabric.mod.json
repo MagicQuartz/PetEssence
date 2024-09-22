@@ -14,7 +14,7 @@
       "io.github.magicquartz.pet_essence.client.Pet_essenceClient"
     ],
     "main": [
-      "io.github.magicquartz.pet_essence.Pet_essence"
+      "io.github.magicquartz.pet_essence.Main"
     ]
   },
   "mixins": [
