@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "category": "misc",
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "minecraft:totem_of_undying"
+  },
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "item": "pet_essence:friendly_fire_totem"
+  }
+}
