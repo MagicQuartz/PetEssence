@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "category": "misc",
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "pet_essence:spirit"
+  },
+  "addition": {
+    "item": "pet_essence:persistence_totem"
+  },
+  "result": {
+    "item": "pet_essence:spirit_persist"
+  }
+}

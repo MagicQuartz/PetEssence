@@ -1,0 +1,10 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pet_essence:item/spirit_persist"
+  },
+  "overrides": [
+    {"predicate": {"custom_model_data": 95}, "model": "pet_essence:item/wolf_spirit_persist"},
+    {"predicate": {"custom_model_data": 98}, "model": "pet_essence:item/cat_spirit_persist"}
+  ]
+}

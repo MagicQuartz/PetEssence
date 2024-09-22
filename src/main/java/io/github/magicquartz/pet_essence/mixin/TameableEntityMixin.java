@@ -1,14 +1,8 @@
 package io.github.magicquartz.pet_essence.mixin;
 
-import io.github.magicquartz.pet_essence.item.SpiritItem;
 import io.github.magicquartz.pet_essence.registry.ModItems;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.TameableEntity;

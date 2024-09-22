@@ -2,8 +2,6 @@ package io.github.magicquartz.pet_essence.item;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -14,7 +12,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -24,13 +21,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class SpiritItem extends Item {
-    public SpiritItem(Settings settings) {
-        super(settings.fireproof().maxCount(1).rarity(Rarity.RARE));
+public class PersistentSpiritItem extends Item {
+    public PersistentSpiritItem(Settings settings) {
+        super(settings.fireproof().maxCount(1).rarity(Rarity.EPIC));
     }
 
     @Override

@@ -26,8 +26,9 @@ public class ItemEntityMixin {
         }
 
         // Additional condition to prevent damage to ModItems.SPIRIT from explosions
-        if (!stack.isEmpty() && stack.isOf(ModItems.SPIRIT) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-            return true;
+        if (source.isIn(DamageTypeTags.IS_EXPLOSION) && !stack.isEmpty())
+        {
+            return stack.isOf(ModItems.SPIRIT) || stack.isOf(ModItems.PERSISTENT_SPIRIT) || stack.isOf(ModItems.TOTEM);
         }
 
         return false;

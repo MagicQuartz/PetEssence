@@ -4,6 +4,7 @@
   "package": "io.github.magicquartz.pet_essence.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AnvilScreenHandlerMixin",
     "ItemEntityMixin",
     "TameableEntityMixin",
     "WolfEntityMixin"
