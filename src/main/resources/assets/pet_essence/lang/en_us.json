@@ -1,5 +1,8 @@
 {
   "item.pet_essence.spirit": "Hollow Spirit",
   "item.pet_essence.persistence_totem": "Totem of Persistence",
-  "item.pet_essence.spirit_persist": "Persistent Hollow Spirit"
+  "item.pet_essence.takeover_totem": "Takeover Totem",
+  "item.pet_essence.spirit_persist": "Persistent Hollow Spirit",
+  "item.pet_essence.apple_of_alliance": "Apple of Alliance",
+  "item.pet_essence.allied_spirit": "Allied Hollow Spirit"
 }

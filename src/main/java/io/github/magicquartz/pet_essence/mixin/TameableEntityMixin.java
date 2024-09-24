@@ -2,7 +2,13 @@ package io.github.magicquartz.pet_essence.mixin;
 
 import io.github.magicquartz.pet_essence.registry.ModItems;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -14,7 +20,10 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,14 +33,20 @@ import java.util.UUID;
 @Mixin(TameableEntity.class)
 public abstract class TameableEntityMixin extends AnimalEntity {
 
+    @Shadow public abstract boolean isOwner(LivingEntity entity);
+
+    @Shadow public abstract @Nullable UUID getOwnerUuid();
+
     protected TameableEntityMixin(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
     }
 
+    @Unique
+    private static final TrackedData<Integer> ALLIED = DataTracker.registerData(TameableEntityMixin.class, TrackedDataHandlerRegistry.INTEGER);
+
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void onDeath(DamageSource source, CallbackInfo ci) {
-
-        //((TameableEntityAccessor)(Object)this).invokeOnDeath(source);
+        // On cat (or parrot, to be added) death
 
         if(((TameableEntity) (Object) this) instanceof CatEntity)
         {
@@ -50,11 +65,11 @@ public abstract class TameableEntityMixin extends AnimalEntity {
 
                 // Copy relevant NBT data from the wolf, excluding Pos, Motion, and Rotation
                 catEntity.writeNbt(nbt); // Write all data into nbt variable
-                // If owner killed pet
+                // If pet died because of player
                 if (source.getAttacker() instanceof PlayerEntity player)
                 {
-                    UUID playerUUID = player.getUuid();
-                    if(!playerUUID.toString().equals(nbt.getUuid("Owner").toString()))
+                    //If player who killed pet is not owner
+                    if(!this.isOwner(player))
                     {
                         petToSpirit(nbt, spiritStack, customName, source);
                     }
@@ -64,6 +79,7 @@ public abstract class TameableEntityMixin extends AnimalEntity {
         }
     }
 
+    @Unique
     private void petToSpirit(NbtCompound nbt, ItemStack spiritStack, Text customName, DamageSource source)
     {
         nbt.remove("Pos");
@@ -91,7 +107,7 @@ public abstract class TameableEntityMixin extends AnimalEntity {
         String deathCause = source.getType().msgId().toLowerCase(); // Get the cause of death message ID
         Text lore = Text.literal("Caused by " + deathCause).styled(style -> style.withItalic(false).withColor(Formatting.BLUE));
 
-        UUID uuid = nbt.getUuid("Owner");
+        UUID uuid = getOwnerUuid();
         String username = getWorld().getServer().getUserCache().getByUuid(uuid).get().getName();
         Text ownerLore = Text.literal("Owner: " + username).styled(style -> style.withItalic(false).withColor(Formatting.DARK_GRAY));
 
@@ -107,5 +123,44 @@ public abstract class TameableEntityMixin extends AnimalEntity {
 
         // Drop the item into the world
         this.dropStack(spiritStack);
+    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if (getAllied() == 1) {
+            if ((source.isOf(DamageTypes.PLAYER_ATTACK) || source.isOf(DamageTypes.PLAYER_EXPLOSION
+            )) && this.isOwner((PlayerEntity) source.getAttacker()))
+                return false;
+        }
+        return super.damage(source, amount);
+    }
+
+    @Inject(method = "initDataTracker", at = @At("TAIL"))
+    private void initAlliedDataTracker(CallbackInfo ci) {
+        ((TameableEntity) (Object) this).getDataTracker().startTracking(ALLIED, 0); // Default to 0 (not allied)
+    }
+
+    // Getter for the "Allied" status
+    @Unique
+    public int getAllied() {
+        return ((TameableEntity) (Object) this).getDataTracker().get(ALLIED);
+    }
+
+    // Setter for the "Allied" status
+    @Unique
+    public void setAllied(int value) {
+        ((TameableEntity) (Object) this).getDataTracker().set(ALLIED, value);
+    }
+
+    // Inject into the writeCustomDataToNbt method to save "Allied" data
+    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    private void writeAlliedToNbt(NbtCompound nbt, CallbackInfo ci) {
+        nbt.putInt("Allied", getAllied());
+    }
+
+    // Inject into the readCustomDataFromNbt method to load "Allied" data
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    private void readAlliedFromNbt(NbtCompound nbt, CallbackInfo ci) {
+        setAllied(nbt.getInt("Allied"));
     }
 }

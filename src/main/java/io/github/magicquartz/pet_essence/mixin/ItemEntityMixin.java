@@ -25,10 +25,10 @@ public class ItemEntityMixin {
             return true;
         }
 
-        // Additional condition to prevent damage to ModItems.SPIRIT from explosions
+        // Additional condition to prevent damage to multiple items from explosions
         if (source.isIn(DamageTypeTags.IS_EXPLOSION) && !stack.isEmpty())
         {
-            return stack.isOf(ModItems.SPIRIT) || stack.isOf(ModItems.PERSISTENT_SPIRIT) || stack.isOf(ModItems.TOTEM);
+            return stack.isOf(ModItems.SPIRIT) || stack.isOf(ModItems.PERSISTENT_SPIRIT) || stack.isOf(ModItems.PERSISTENCE_TOTEM) || stack.isOf(ModItems.TAKEOVER_TOTEM);
         }
 
         return false;

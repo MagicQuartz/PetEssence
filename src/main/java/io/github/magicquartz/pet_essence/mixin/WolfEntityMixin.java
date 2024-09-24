@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,8 +48,7 @@ public abstract class WolfEntityMixin extends TameableEntity {
 
             if (source.getAttacker() instanceof PlayerEntity player)
             {
-                UUID playerUUID = player.getUuid();
-                if(!playerUUID.toString().equals(nbt.getUuid("Owner").toString()))
+                if(!this.isOwner(player))
                 {
                     petToSpirit(nbt, spiritStack, customName, source);
                 }
@@ -57,6 +57,7 @@ public abstract class WolfEntityMixin extends TameableEntity {
         }
     }
 
+    @Unique
     private void petToSpirit(NbtCompound nbt, ItemStack spiritStack, Text customName, DamageSource source)
     {
         nbt.remove("Pos");
@@ -84,7 +85,8 @@ public abstract class WolfEntityMixin extends TameableEntity {
         Text lore = Text.literal("Caused by " + deathCause).styled(style -> style.withItalic(false).withColor(Formatting.BLUE));
 
         UUID uuid = nbt.getUuid("Owner");
-        String username = getWorld().getServer().getUserCache().getByUuid(uuid).get().getName();
+        String username = (this.getOwner() != null) ? this.getOwner().getEntityName() : "None";;
+        //String username = getWorld().getServer().getUserCache().getByUuid(uuid).get().getName();
         Text ownerLore = Text.literal("Owner: " + username).styled(style -> style.withItalic(false).withColor(Formatting.DARK_GRAY));
 
         // Add lines of lore (as JSON-formatted strings)

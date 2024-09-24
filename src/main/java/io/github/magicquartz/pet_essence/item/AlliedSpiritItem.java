@@ -2,7 +2,6 @@ package io.github.magicquartz.pet_essence.item;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -15,9 +14,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Rarity;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,11 +27,9 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-import java.util.List;
-
-public class TotemItem extends Item {
-    public TotemItem(Settings settings) {
-        super(settings.fireproof().maxCount(1).rarity(Rarity.RARE));
+public class AlliedSpiritItem extends Item {
+    public AlliedSpiritItem(Settings settings) {
+        super(settings.fireproof().maxCount(1).rarity(Rarity.EPIC));
     }
 
     @Override
@@ -136,6 +134,7 @@ public class TotemItem extends Item {
 
     private Vec3d summonPet(BlockPos blockPos, World world, NbtCompound nbt, PlayerEntity user) {
         int CustomModelData = nbt.getInt("CustomModelData");
+        nbt.putInt("Allied", 1);
         switch (CustomModelData)
         {
             case 95: // Wolf
@@ -171,9 +170,9 @@ public class TotemItem extends Item {
                 return null;
         }
     }
+
     @Override
-    public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        tooltip.add(Text.literal("Used to bring a lost, bound soul back to life.").setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withItalic(false)));
-        tooltip.add(Text.literal("Does not save you from death.").setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withItalic(false)));
+    public boolean hasGlint(ItemStack stack) {
+        return true;
     }
 }
