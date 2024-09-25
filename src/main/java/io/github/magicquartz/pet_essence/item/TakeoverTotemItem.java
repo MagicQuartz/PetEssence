@@ -42,15 +42,14 @@ public class TakeoverTotemItem extends Item {
         if (target instanceof TameableEntity tameable) {
 
             // Check if it's a wolf or a cat
-            //if (tameable instanceof WolfEntity || tameable instanceof CatEntity) {
+            if (tameable instanceof WolfEntity || tameable instanceof CatEntity) {
                 if (!world.isClient()) {
                     if(!tameable.isOwner(player))
                     {
                         // Set the custom "Allied" NBT tag to 1
                         tameable.setOwner(player);
-                        tameable.setInSittingPose(tameable.isSitting());
 
-                        String petName = target.getCustomName() != null ? target.getCustomName().toString() : "The pet";
+                        String petName = target.getCustomName() != null ? target.getCustomName().getString() : "The pet";
                         player.sendMessage(Text.literal(petName + " has forgotten their previous owner..."), true);
 
                         world.playSound(null, target.getX(), target.getY(), target.getZ(),
@@ -66,7 +65,7 @@ public class TakeoverTotemItem extends Item {
                     }
                 }
                 return ActionResult.PASS;
-            //}
+            }
         }
         return ActionResult.PASS;
     }

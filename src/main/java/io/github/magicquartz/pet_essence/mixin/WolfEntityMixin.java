@@ -2,23 +2,34 @@ package io.github.magicquartz.pet_essence.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.magicquartz.pet_essence.registry.ModItems;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -101,5 +112,40 @@ public abstract class WolfEntityMixin extends TameableEntity {
 
         // Drop the item into the world
         this.dropStack(spiritStack);
+    }
+
+    @Inject(method = "interactMob", at = @At("HEAD"), cancellable = true)
+    private void injectInteractMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        ItemStack stack = player.getStackInHand(hand);
+        World world = player.getWorld();
+        if (stack.getItem() == ModItems.APPLE && player.isSneaking()) {
+            NbtCompound nbt = new NbtCompound();
+            this.writeNbt(nbt); // Write into NBT
+
+            // Check if the player is the owner of the wolf
+            if (this.isOwner(player)) {
+                if (nbt.getInt("Allied") == 0) {
+                    nbt.putInt("Allied", 1);
+                    this.readNbt(nbt);
+                    //this.setSitting(!this.isSitting()); // Change sitting status
+                    world.playSound(null, this.getX(), this.getY(), this.getZ(),
+                            SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
+                            SoundCategory.NEUTRAL, 1.0F, 1.0F);
+                    stack.decrement(1); // Consume the item
+                    cir.setReturnValue(ActionResult.CONSUME);
+                } else if (nbt.getInt("Allied") == 1) {
+                    player.sendMessage(Text.literal("Your pet is already protected!"), true);
+                    cir.setReturnValue(ActionResult.PASS);
+                } else {
+                    player.sendMessage(Text.literal("There is an error with the pet's NBT! Try setting 'Allied' to 0!"), true);
+                    cir.setReturnValue(ActionResult.PASS);
+                }
+            } else {
+                player.sendMessage(Text.literal("You can only add this to your own pet!"), true);
+                cir.setReturnValue(ActionResult.PASS);
+            }
+        } else {
+            super.interactMob(player, hand);
+        }
     }
 }

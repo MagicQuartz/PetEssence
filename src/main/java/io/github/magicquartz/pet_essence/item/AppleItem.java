@@ -52,12 +52,10 @@ public class AppleItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         World world = player.getWorld();
-
         // Check if the target is a tameable entity (specifically a wolf or a cat)
         if (player.isSneaking() && target instanceof TameableEntity tameable) {
-
             // Check if it's a wolf or a cat
-            //if (tameable instanceof WolfEntity || tameable instanceof CatEntity) {
+            if (tameable instanceof WolfEntity || tameable instanceof CatEntity) {
                 if (!world.isClient()) {
                     NbtCompound nbt = new NbtCompound();
                     tameable.writeNbt(nbt); // Write into nbt
@@ -68,7 +66,6 @@ public class AppleItem extends Item {
                             // Set the custom "Allied" NBT tag to 1
                             nbt.putInt("Allied", 1);
                             tameable.readNbt(nbt);
-                            tameable.setInSittingPose(tameable.isSitting());
 
                             world.playSound(null, target.getX(), target.getY(), target.getZ(),
                                     SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
@@ -91,7 +88,7 @@ public class AppleItem extends Item {
                     }
                 }
                 return ActionResult.PASS;
-            //}
+            }
         }
         return ActionResult.PASS;
     }
