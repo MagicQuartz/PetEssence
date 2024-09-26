@@ -5,6 +5,8 @@
   },
   "overrides": [
     {"predicate": {"custom_model_data": 95}, "model": "pet_essence:item/wolf_spirit"},
-    {"predicate": {"custom_model_data": 98}, "model": "pet_essence:item/cat_spirit"}
+    {"predicate": {"custom_model_data": 98}, "model": "pet_essence:item/cat_spirit"},
+    {"predicate": {"custom_model_data": 100}, "model": "pet_essence:item/horse_spirit"},
+    {"predicate": {"custom_model_data": 105}, "model": "pet_essence:item/parrot_spirit"}
   ]
 }

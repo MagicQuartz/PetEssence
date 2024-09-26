@@ -3,8 +3,8 @@ package io.github.magicquartz.pet_essence.item;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -135,40 +135,34 @@ public class AlliedSpiritItem extends Item {
     private Vec3d summonPet(BlockPos blockPos, World world, NbtCompound nbt, PlayerEntity user) {
         int CustomModelData = nbt.getInt("CustomModelData");
         nbt.putInt("Allied", 1);
-        switch (CustomModelData)
-        {
-            case 95: // Wolf
-                // Create and spawn the wolf
-                WolfEntity wolf = EntityType.WOLF.create(world);
-                if (wolf != null) {
-                    wolf.readNbt(nbt); // Read the NBT data into the wolf
-                    wolf.setPosition(blockPos.toCenterPos().getX(), blockPos.getY(), blockPos.toCenterPos().getZ()); // Set the position
-                    world.spawnEntity(wolf);
-                    // Play the sound
-                    world.playSound(null, user.getX(), user.getY(), user.getZ(),
-                            SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE,
-                            SoundCategory.PLAYERS, 1.0F, 1.0F);
-                    return wolf.getPos();
-                }
-                return null;
-            case 98: // Cat
-                // Create and spawn the cat
-                CatEntity cat = EntityType.CAT.create(world);
-                if (cat != null) {
-                    cat.readNbt(nbt); // Read the NBT data into the cat
-                    cat.setPosition(blockPos.toCenterPos().getX(), blockPos.getY(), blockPos.toCenterPos().getZ()); // Set the position
-                    world.spawnEntity(cat);
 
-                    // Play the sound
-                    world.playSound(null, user.getX(), user.getY(), user.getZ(),
-                            SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE,
-                            SoundCategory.PLAYERS, 1.0F, 1.0F);
-                    return cat.getPos();
-                }
-                return null;
+        // Create and spawn the entity
+        AnimalEntity entity;
+        switch(CustomModelData) {
+            case 95: // Wolf
+                entity = EntityType.WOLF.create(world);
+                break;
+            case 98: // Cat
+                entity = EntityType.CAT.create(world);
+                break;
+            case 100: // Horse
+                entity = EntityType.HORSE.create(world);
+                break;
+            case 105: // Parrot
+                entity = EntityType.PARROT.create(world);
+                break;
             default:
                 return null;
         }
+        entity.readNbt(nbt); // Read the NBT data into the cat
+        entity.setPosition(blockPos.toCenterPos().getX(), blockPos.getY(), blockPos.toCenterPos().getZ()); // Set the position
+        world.spawnEntity(entity);
+
+        // Play the sound
+        world.playSound(null, user.getX(), user.getY(), user.getZ(),
+                SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE,
+                SoundCategory.PLAYERS, 1.0F, 1.0F);
+        return entity.getPos();
     }
 
     @Override

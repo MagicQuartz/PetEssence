@@ -4,14 +4,11 @@ import io.github.magicquartz.pet_essence.registry.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -32,7 +29,6 @@ import java.util.UUID;
 
 @Mixin(TameableEntity.class)
 public abstract class TameableEntityMixin extends AnimalEntity {
-
     @Shadow public abstract boolean isOwner(LivingEntity entity);
 
     @Shadow public abstract @Nullable UUID getOwnerUuid();
@@ -48,48 +44,59 @@ public abstract class TameableEntityMixin extends AnimalEntity {
     private void onDeath(DamageSource source, CallbackInfo ci) {
         // On cat (or parrot, to be added) death
 
-        if(((TameableEntity) (Object) this) instanceof CatEntity)
+        if(((TameableEntity) (Object) this) instanceof CatEntity entity)
         {
-            CatEntity catEntity = (CatEntity) (Object) this;
+            deathChecks(entity, source, 95);
 
-            // Check if the wolf is tamed and has a custom name
-            if (catEntity.isTamed() && catEntity.hasCustomName()) {
-                // Get the wolf's custom name
-                Text customName = catEntity.getCustomName();
-
-                // Create an ItemStack of the Spirit item
-                ItemStack spiritStack = new ItemStack(ModItems.SPIRIT);
-
-                // Create NBT data for the spirit item
-                NbtCompound nbt = new NbtCompound();
-
-                // Copy relevant NBT data from the wolf, excluding Pos, Motion, and Rotation
-                catEntity.writeNbt(nbt); // Write all data into nbt variable
-                // If pet died because of player
-                if (source.getAttacker() instanceof PlayerEntity player)
-                {
-                    //If player who killed pet is not owner
-                    if(!this.isOwner(player))
-                    {
-                        petToSpirit(nbt, spiritStack, customName, source);
-                    }
-                } else
-                    petToSpirit(nbt, spiritStack, customName, source);
-            }
+        } else if(((TameableEntity) (Object) this) instanceof ParrotEntity entity)
+        {
+            deathChecks(entity, source, 105);
         }
     }
 
     @Unique
-    private void petToSpirit(NbtCompound nbt, ItemStack spiritStack, Text customName, DamageSource source)
+    private void deathChecks(TameableEntity entity, DamageSource source, int modelData)
+    {
+        // Check if the wolf is tamed and has a custom name
+        if (entity.isTamed() && entity.hasCustomName()) {
+            // Get the wolf's custom name
+            Text customName = entity.getCustomName();
+
+            // Create an ItemStack of the Spirit item
+            ItemStack spiritStack = new ItemStack(ModItems.SPIRIT);
+
+            // Create NBT data for the spirit item
+            NbtCompound nbt = new NbtCompound();
+
+            // Copy relevant NBT data from the wolf, excluding Pos, Motion, and Rotation
+            entity.writeNbt(nbt); // Write all data into nbt variable
+            // If pet died because of player
+            if (source.getAttacker() instanceof PlayerEntity player)
+            {
+                //If player who killed pet is not owner
+                if(!this.isOwner(player))
+                {
+                    petToSpirit(nbt, spiritStack, customName, source, modelData);
+                }
+            } else
+                petToSpirit(nbt, spiritStack, customName, source, modelData);
+        }
+    }
+
+    @Unique
+    private void petToSpirit(NbtCompound nbt, ItemStack spiritStack, Text customName, DamageSource source, int modelData)
     {
         nbt.remove("Pos");
         nbt.remove("Motion");
         nbt.remove("Rotation");
         nbt.remove("Fire");
         nbt.remove("Sitting");
-        nbt.putInt("Health", 10);
+        if(modelData == 98) // Cat
+            nbt.putInt("Health", 10);
+        else if(modelData == 105) // Parrot
+            nbt.putInt("Health", 6);
 
-        nbt.putInt("CustomModelData", 98); // 95 is the previous id of the wolf in spawn eggs and spawners
+        nbt.putInt("CustomModelData", modelData); // number by old spawn eggs numbers in older minecraft versions
 
         // Set the NBT data to the spirit item
         spiritStack.setNbt(nbt);

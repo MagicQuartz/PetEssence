@@ -5,6 +5,8 @@
   },
   "overrides": [
     {"predicate": {"custom_model_data": 95}, "model": "pet_essence:item/allied_wolf_spirit"},
-    {"predicate": {"custom_model_data": 98}, "model": "pet_essence:item/allied_cat_spirit"}
+    {"predicate": {"custom_model_data": 98}, "model": "pet_essence:item/allied_cat_spirit"},
+    {"predicate": {"custom_model_data": 100}, "model": "pet_essence:item/allied_horse_spirit"},
+    {"predicate": {"custom_model_data": 105}, "model": "pet_essence:item/allied_parrot_spirit"}
   ]
 }

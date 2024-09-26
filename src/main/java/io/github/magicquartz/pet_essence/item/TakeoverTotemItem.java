@@ -5,9 +5,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -40,9 +38,10 @@ public class TakeoverTotemItem extends Item {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         World world = player.getWorld();
         if (target instanceof TameableEntity tameable) {
-
             // Check if it's a wolf or a cat
-            if (tameable instanceof WolfEntity || tameable instanceof CatEntity) {
+            if (tameable instanceof WolfEntity ||
+                    tameable instanceof CatEntity ||
+            tameable instanceof ParrotEntity) {
                 if (!world.isClient()) {
                     if(!tameable.isOwner(player))
                     {
@@ -64,7 +63,6 @@ public class TakeoverTotemItem extends Item {
                         return ActionResult.PASS;
                     }
                 }
-                return ActionResult.PASS;
             }
         }
         return ActionResult.PASS;
